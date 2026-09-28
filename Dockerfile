@@ -9,11 +9,13 @@ COPY client/package.json ./client/package.json
 RUN npm install
 
 # 构建客户端静态产物到 client/dist
+# 客户端预演面板直接复用服务端纯函数（server/src/agenda|devices|rehearsal.js），
+# 因此构建客户端前先复制全部源码；先 copy 一次 server 也能复用前一层依赖缓存。
 COPY client ./client
+COPY server ./server
 RUN npm run build
 
-# 再复制服务端源码；随后剔除开发依赖（Vite 等），精简运行层
-COPY server ./server
+# 开发依赖（Vite 等）在客户端构建后即可剔除，精简运行层
 RUN npm prune --omit=dev
 
 # ---- 运行阶段：单进程 Node 服务（静态文件 + WebSocket 同端口）----

@@ -1223,3 +1223,78 @@ body {
 .dev-gap-ok { color: var(--green); }
 .dev-gap-bad { color: #ffb020; font-weight: 700; }
 .dev-gap-short { color: #ff9b9b; font-style: normal; margin-left: 4px; font-weight: 600; }
+
+/* ---------------- 结束时间预演（rehearsal） ---------------- */
+.rehearsal-panel { display: flex; flex-direction: column; gap: 10px; }
+.reh-input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.reh-input-row label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+.reh-min-input {
+  width: 92px;
+  padding: 6px 8px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #33405f;
+  background: #141c2e;
+  color: var(--text);
+}
+.reh-state-hint { flex: 1 1 240px; }
+
+.reh-result { display: flex; flex-direction: column; gap: 12px; }
+.reh-endpoint { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.reh-endpoint-label { color: var(--muted); font-size: 13px; }
+.reh-endpoint-time { font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+.reh-endpoint-delta {
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #3a4665;
+  font-variant-numeric: tabular-nums;
+}
+.reh-delta-same { color: var(--muted); }
+.reh-delta-late { color: #ffb020; border-color: rgba(255, 176, 32, .5); background: rgba(255, 176, 32, .08); }
+.reh-delta-early { color: var(--green); border-color: rgba(46, 204, 113, .45); background: rgba(46, 204, 113, .07); }
+
+/* 模拟议程表 */
+.reh-agenda { display: flex; flex-direction: column; gap: 4px; }
+.reh-agenda-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) 110px 110px minmax(240px, 2.2fr);
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--panel-2);
+}
+.reh-head { background: transparent; color: var(--muted); font-size: 12px; }
+.reh-row-current { border: 1px solid rgba(79, 140, 255, .55); background: rgba(79, 140, 255, .1); }
+.reh-agenda-name { font-weight: 600; display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.reh-agenda-time { color: #c6d2e6; font-variant-numeric: tabular-nums; }
+.reh-agenda-delta { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
+.reh-agenda-delta em { font-style: normal; }
+
+/* 设备冲突对账 */
+.reh-devices { display: flex; flex-direction: column; gap: 8px; }
+.reh-dev-summary { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.reh-conflict-box { border-radius: 10px; }
+.reh-kind {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #3a4665;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.reh-kind-new { color: #ff9b9b; border-color: rgba(255, 68, 68, .7); background: rgba(255, 68, 68, .18); }
+.reh-kind-worse { color: #ffd166; border-color: rgba(255, 176, 32, .7); background: rgba(255, 176, 32, .18); }
+.reh-kind-better { color: var(--green); border-color: rgba(46, 204, 113, .5); }
+.reh-kind-same { color: var(--muted); }
+.reh-conflict-hot {
+  border-color: rgba(255, 68, 68, .75);
+  background: rgba(255, 68, 68, .12);
+}
+.reh-short-delta { font-style: normal; margin-left: 4px; }
+.reh-resolved { color: var(--green); }
+.reh-occ-delta { font-size: 12px; }
+.reh-occ-hot { box-shadow: inset 3px 0 0 var(--red); }

@@ -7,6 +7,7 @@ import ScenePanel from './ScenePanel.jsx';
 import MarkerPanel from './MarkerPanel.jsx';
 import InspectionPanel from './InspectionPanel.jsx';
 import DevicePanel from './DevicePanel.jsx';
+import RehearsalPanel from './RehearsalPanel.jsx';
 import HandoverPanel from './HandoverPanel.jsx';
 
 // 控制台：同一时刻全服务仅一个实例可持有控制权。
@@ -281,6 +282,8 @@ export default function ConsolePage() {
         lastError={lastError}
         onClearError={clearError}
       />
+
+      <RehearsalPanel snap={snap} devices={devices} connState={connState} />
 
       {control.granted && (
         <>

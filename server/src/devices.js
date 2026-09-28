@@ -109,18 +109,34 @@ export function pruneMissingItems(devices, validItems) {
 // 绑定占用）。中间隔着未绑定环节时，两场占用可能相距超过半天，若把未绑定行也纳入
 // 全局展开，跨午夜归属会被中间行带偏。输出 Map: itemId -> { index, startMs, endMs }。
 export function linearizeRows(rows) {
-  const map = new Map();
-  let prevEnd = null;
-  rows.forEach((r, index) => {
-    let startMs = r.projStartMs;
-    if (prevEnd != null) {
-      // 选择整数天偏移，使本行起点最接近上一行线性终点（跨午夜 +DAY；同日压缩不跨日）
-      const offsetDays = Math.round((prevEnd - r.projStartMs) / DAY_MS);
-      startMs = r.projStartMs + offsetDays * DAY_MS;
+  // 第一遍：逐行求线性起点（固定点按前一行线性终点的“最近一天”决定跨日）。
+  // 前一行若也是被跨午夜压缩的负跨度行，其递推锚点退化为“起点 + 计划时长”
+  // （自然结束位置），对固定点的最近一天判定已足够（相邻环节相距不超过 12 小时）。
+  const starts = [];
+  for (let i = 0; i < rows.length; i += 1) {
+    if (i === 0) {
+      starts.push(rows[i].projStartMs);
+      continue;
     }
-    const endMs = startMs + (r.projEndMs - r.projStartMs);
+    const prev = rows[i - 1];
+    const prevStart = starts[i - 1];
+    const rawPrevEnd = prevStart + (prev.projEndMs - prev.projStartMs);
+    const anchor = rawPrevEnd >= prevStart ? rawPrevEnd : prevStart + prev.durationMs;
+    const offsetDays = Math.round((anchor - rows[i].projStartMs) / DAY_MS);
+    starts.push(rows[i].projStartMs + offsetDays * DAY_MS);
+  }
+
+  // 第二遍：线性终点。固定点压缩到跨午夜时原始跨度为负（projEnd 是下一天的
+  // ms-of-day，落在本行起点之前）：该行真实终点即截断它的下一个固定环节起点，
+  // 对相邻占用而言它就等于下一行的线性起点（两者同一固定点），直接采用使 gap=0。
+  const map = new Map();
+  rows.forEach((r, index) => {
+    const startMs = starts[index];
+    let endMs = startMs + (r.projEndMs - r.projStartMs);
+    if (endMs < startMs) {
+      endMs = index + 1 < rows.length ? starts[index + 1] : startMs;
+    }
     map.set(r.id, { index, startMs, endMs });
-    prevEnd = endMs;
   });
   return map;
 }
@@ -203,6 +219,8 @@ export function buildOccupancy(devices, rows) {
       id: d.id,
       name: d.name,
       turnaroundMs: d.turnaroundMs,
+      // 重新生成绑定 id 数组，绝不复用入参 d.itemIds 引用（保持纯函数：同一设备库
+      // 被连续多次推演调用时，输出之间不得通过共享数组互相影响）
       itemIds: occupations.map((o) => o.itemId),
       occupations,
       conflictCount,
