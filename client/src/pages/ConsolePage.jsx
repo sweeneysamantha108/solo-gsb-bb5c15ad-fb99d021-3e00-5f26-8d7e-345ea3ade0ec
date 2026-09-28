@@ -7,6 +7,7 @@ import ScenePanel from './ScenePanel.jsx';
 import MarkerPanel from './MarkerPanel.jsx';
 import InspectionPanel from './InspectionPanel.jsx';
 import DevicePanel from './DevicePanel.jsx';
+import RehearsalPanel from './RehearsalPanel.jsx';
 import HandoverPanel from './HandoverPanel.jsx';
 
 // 控制台：同一时刻全服务仅一个实例可持有控制权。
@@ -280,6 +281,20 @@ export default function ConsolePage() {
         send={send}
         lastError={lastError}
         onClearError={clearError}
+      />
+
+      <RehearsalPanel
+        snap={snap}
+        liveAgendaRows={agenda?.items ?? null}
+        currentId={agenda?.currentId ?? null}
+        elapsedMs={agenda
+          ? (phase === 'running'
+            ? Math.max(0, snap.durationMs - remaining)
+            : snap.agenda.elapsedMs)
+          : 0}
+        devices={devices}
+        // 当前环节切换 / 服务纪元变化（重启）/ 断线重连后清空旧输入，按新快照重算
+        basisKey={`${snap?.epoch ?? ''}|${agenda?.currentId ?? ''}|${connState}`}
       />
 
       {control.granted && (
